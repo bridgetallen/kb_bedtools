@@ -7,7 +7,8 @@ MAINTAINER KBase Developer
 # installation scripts.
 
 # RUN apt-get update
-
+RUN apt-get update
+RUN apt-get install -y bedtools
 
 # -----------------------------------------
 WORKDIR /kb/module

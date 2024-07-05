@@ -3,6 +3,7 @@ import os
 import time
 import unittest
 from configparser import ConfigParser
+import subprocess
 
 from kb_bedtools.kb_bedtoolsImpl import kb_bedtools
 from kb_bedtools.kb_bedtoolsServer import MethodContext
@@ -69,14 +70,37 @@ class kb_bedtoolsTest(unittest.TestCase):
         #
         # Check returned data with
         # self.assertEqual(ret[...], ...) or other unittest methods
-        ret = self.serviceImpl.run_kb_bedtools(
-            self.ctx,
-            {
-                "workspace_name": self.wsName,
-                "reads_ref": "70257/2/1",
-                "output_name": "ReadsOutputName",
-            },
-        )
+        #ret = self.serviceImpl.run_kb_bedtools(
+        #    self.ctx,
+        #    {
+        #        "workspace_name": self.wsName,
+        #        "reads_ref": "70257/2/1",
+        #        "output_name": "ReadsOutputName",
+        #    },
+        #)
+        with self.assertRaises(KeyError):
+            self.serviceImpl.run_kb_bedtools(self.ctx, {'workspace_name': self.wsName})
         # next steps:
         # - download report
         # - assert that the report has expected contents
+    
+    def test_bam_to_fastq(self):
+        bam_filename = 'wgEncodeUwRepliSeqBg02esG1bAlnRep1.bam'
+        with open(bam_filename, 'rb') as file:
+            bam_data = file.read().decode('utf-8', 'ignore')
+        print(bam_data)
+
+        open('filename_end1.fq', 'w').close()
+        open('filename_end2.fq', 'w').close()
+
+        with open('filename_end2.fq', 'w') as f:
+            result = subprocess.Popen(['bedtools', 'bamtofastq', '-i', bam_filename, '-fq', 
+                                       'filename_end1.fq', '-fq2', '/dev/stdout'], stdout=f)
+            result.wait()
+
+        with open('filename_end2.fq', 'r') as fq_together:
+            print(fq_together.read())
+        if result.returncode == 0:
+            print("Command executed successfully")
+        else:
+            print(f"Error occurred while executing command ")

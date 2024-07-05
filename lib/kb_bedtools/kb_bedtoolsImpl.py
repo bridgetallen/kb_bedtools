@@ -2,6 +2,7 @@
 #BEGIN_HEADER
 import logging
 import os
+import subprocess
 
 from installed_clients.KBaseReportClient import KBaseReport
 from installed_clients.ReadsUtilsClient import ReadsUtils
@@ -64,6 +65,16 @@ class kb_bedtools:
                 ReadsUtils=ReadsUtils
             ),
         )
+
+        bam_filename = params['bam_file']
+        with open(bam_filename, 'rb') as file:
+            bam_data = file.read().decode('utf-8', 'ignore')
+        print(bam_data)
+        open('filename_end1.fq', 'w').close()
+        open('filename_end2.fq', 'w').close()
+        with open('filename_end2.fq', 'w') as f:
+            result = subprocess.Popen(['bedtools', 'bamtofastq', '-i', bam_filename, '-fq', 
+                                       'filename_end1.fq', '-fq2', '/dev/stdout'], stdout=f)
         # Download Reads
 
         era = ExampleReadsApp(ctx, config=config)
