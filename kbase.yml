@@ -1,5 +1,5 @@
 module-name:
-    example_kb_sdk_app
+    kb_bedtools
 
 module-description:
     A KBase module

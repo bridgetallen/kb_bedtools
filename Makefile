@@ -1,7 +1,7 @@
-SERVICE = example_kb_sdk_app
-SERVICE_CAPS = example_kb_sdk_app
-SPEC_FILE = example_kb_sdk_app.spec
-URL = https://kbase.us/services/example_kb_sdk_app
+SERVICE = kb_bedtools
+SERVICE_CAPS = kb_bedtools
+SPEC_FILE = kb_bedtools.spec
+URL = https://kbase.us/services/kb_bedtools
 DIR = $(shell pwd)
 LIB_DIR = lib
 SCRIPTS_DIR = scripts
