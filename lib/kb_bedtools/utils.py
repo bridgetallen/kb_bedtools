@@ -12,6 +12,7 @@ from collections import Counter
 from shutil import copyfile
 
 import pandas as pd
+import subprocess
 
 from Bio import SeqIO
 
@@ -177,3 +178,60 @@ class ExampleReadsApp(Core):
             workspace_name=params["workspace_name"],
         )
         return self.create_report_from_template(template_path, config)
+
+class BamConversion(Core):
+    def __init__(self, ctx, config, clients_class=None):
+        """
+        This is required to instantiate the Core App class with its defaults
+        and allows you to pass in more clients as needed.
+        """
+        super().__init__(ctx, config, clients_class)
+        # Here we adjust the instance attributes for our convenience.
+        self.report = self.clients.KBaseReport
+        self.ru = self.clients.ReadsUtils
+        # self.shared_folder is defined in the Core App class.
+        # TODO Add a self.wsid = a conversion of self.wsname
+
+    def bam_to_fastq(self, bam_file):
+        bam_filename = bam_file
+        with open(bam_filename, 'rb') as file:
+            bam_data = file.read().decode('utf-8', 'ignore')
+        # best to use logging here so that messages are more visible
+        logging.warning(f'{">"*20}{os.getcwd()}')
+        with subprocess.Popen([
+            'bedtools', 'bamtofastq', '-i', bam_filename, '-fq', 'filename_end1.fq'
+        ]) as proc:
+            proc.wait()
+        out_path = os.path.join(self.shared_folder, 'output.fq')
+        copyfile('filename_end1.fq', out_path)
+        # Upload the fastq file we just made to a reads object in KBase
+        # upa = self.upload_reads(
+        #     name=params["output_name"], reads_path=out_path, wsname=params["workspace_name"]
+        # )
+        #logging.warning(f">>>>>>>>>>>>>>>>>>>>{os.getcwd()}")
+        #fastq_path = '/kb/module/test/filename_end1.fq'
+        #fastq_file = open(fastq_path, 'r')
+        #print(fastq_file.read())
+
+        return out_path
+    
+    def upload_reads(self, name, reads_path, wsname):
+        """
+        Upload reads back to the KBase Workspace. This method only uses the
+        minimal parameters necessary to provide a demonstration. There are many
+        more parameters which reads can provide, for example, interleaved, etc.
+        By default, non-interleaved objects and those uploaded without a
+        reverse file are saved as KBaseFile.SingleEndLibrary. See:
+        https://github.com/kbaseapps/ReadsUtils/blob/master/lib/ReadsUtils/ReadsUtilsImpl.py#L115-L119
+        param: filepath_to_reads - A filepath to a fastq fastq file to upload reads from
+        param: wsname - The name of the workspace to upload to
+        """
+        ur_params = {
+            "fwd_file": reads_path,
+            "name": name,
+            "sequencing_tech": "Illumina",
+            "wsname": wsname,
+        }
+        # It is often useful to log parameters as they are passed.
+        logging.warning(f">>>>>>>>>>>>>>>>>>>>{ur_params}")
+        return self.ru.upload_reads(ur_params)

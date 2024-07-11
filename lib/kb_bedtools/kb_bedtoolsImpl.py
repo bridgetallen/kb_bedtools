@@ -6,7 +6,7 @@ import subprocess
 
 from installed_clients.KBaseReportClient import KBaseReport
 from installed_clients.ReadsUtilsClient import ReadsUtils
-from .utils import ExampleReadsApp
+from .utils import ExampleReadsApp, BamConversion 
 from base import Core
 
 
@@ -66,20 +66,19 @@ class kb_bedtools:
             ),
         )
 
-        bam_filename = params['bam_file']
-        with open(bam_filename, 'rb') as file:
-            bam_data = file.read().decode('utf-8', 'ignore')
-        print(bam_data)
-        open('filename_end1.fq', 'w').close()
-        open('filename_end2.fq', 'w').close()
-        with open('filename_end2.fq', 'w') as f:
-            result = subprocess.Popen(['bedtools', 'bamtofastq', '-i', bam_filename, '-fq', 
-                                       'filename_end1.fq', '-fq2', '/dev/stdout'], stdout=f)
+        bam = BamConversion(ctx, config=config)
+        fastq_path = bam.bam_to_fastq(params['bam_file'])        #ExampleReadsApp.upload_reads(self, params['name'], params['reads_path'], params['wsname']) 
+        #out_path = os.path.join(self.shared_folder, 'filename_end1')
+        #logging.warning(f">>>>>>>>>>>>>>>>>>>>{fastq_path}")
+        # bam.upload_reads(params['output_name'], fastq_path, params['workspace_name']) 
+
+        #ExampleReadsApp.upload_reads(self, params['name'], params['reads_path'], params['wsname']) #might not need this
         # Download Reads
 
-        era = ExampleReadsApp(ctx, config=config)
-        output = era.do_analysis(params)
+        #era = ExampleReadsApp(ctx, config=config)
+        #output = era.do_analysis(params)
 
+        output = {}
         #END run_kb_bedtools
 
         # At some point might do deeper type checking...

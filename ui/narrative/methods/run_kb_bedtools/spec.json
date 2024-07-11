@@ -32,7 +32,30 @@
               "valid_ws_types" : [ "KBaseFile.SingleEndLibrary" ],
               "is_output_name":true
              }
-        }
+        },
+        {
+            "id": "bam_file",
+            "optional": false,
+            "advanced": false,
+            "allow_multiple": false,
+            "field_type": "dynamic_dropdown",
+            "dynamic_dropdown_options": {
+                "data_source": "ftp_staging"
+            }
+        },
+        {
+            "id": "fastq_path_name",
+            "optional": false,
+            "advanced": false,
+            "allow_multiple": false,
+            "default_values": [
+              ""
+            ],
+            "field_type": "dynamic_dropdown",
+            "dynamic_dropdown_options": {
+              "data_source": "ftp_staging"
+            }
+          }
     ],
     "behavior": {
         "service-mapping": {

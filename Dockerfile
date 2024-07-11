@@ -8,7 +8,9 @@ MAINTAINER KBase Developer
 
 # RUN apt-get update
 RUN apt-get update
-RUN apt-get install -y bedtools
+RUN apt-get install -y wget
+RUN wget -O /usr/bin/bedtools https://github.com/arq5x/bedtools2/releases/download/v2.31.0/bedtools.static
+RUN chmod +x /usr/bin/bedtools
 
 # -----------------------------------------
 WORKDIR /kb/module
