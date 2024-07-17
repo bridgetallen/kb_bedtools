@@ -113,7 +113,7 @@ class ExampleReadsApp(Core):
         more parameters which reads can provide, for example, interleaved, etc.
         By default, non-interleaved objects and those uploaded without a
         reverse file are saved as KBaseFile.SingleEndLibrary. See:
-        https://github.com/kbaseapps/ReadsUtils/blob/master/lib/ReadsUtils/ReadsUtilsImpl.py#L115-L119
+        https://githusb.com/kbaseapps/ReadsUtils/blob/master/lib/ReadsUtils/ReadsUtilsImpl.py#L115-L119
         param: filepath_to_reads - A filepath to a fastq fastq file to upload reads from
         param: wsname - The name of the workspace to upload to
         """
@@ -122,6 +122,7 @@ class ExampleReadsApp(Core):
             "name": name,
             "sequencing_tech": "Illumina",
             "wsname": wsname,
+            "single_genome": 0,
         }
         # It is often useful to log parameters as they are passed.
         logging.warning(f">>>>>>>>>>>>>>>>>>>>{ur_params}")
@@ -180,7 +181,7 @@ class ExampleReadsApp(Core):
         return self.create_report_from_template(template_path, config)
 
 class BamConversion(Core):
-    def __init__(self, ctx, config, clients_class=None):
+    def __init__(self, ctx, config, app_config, clients_class=None):
         """
         This is required to instantiate the Core App class with its defaults
         and allows you to pass in more clients as needed.
@@ -189,10 +190,25 @@ class BamConversion(Core):
         # Here we adjust the instance attributes for our convenience.
         self.report = self.clients.KBaseReport
         self.ru = self.clients.ReadsUtils
+        self.app_config = app_config
         # self.shared_folder is defined in the Core App class.
         # TODO Add a self.wsid = a conversion of self.wsname
 
-    def bam_to_fastq(self, bam_file):
+    def do_analysis(self, params: dict):
+        """
+        This method is where the main computation will occur.
+        """
+        bam_file = params['bam_file']
+        output_name = params['output_name']
+        wsname = params['workspace_name']
+        sequencing_tech = 'Illumina'
+        interleaved = params['interleaved']
+        fastq_path = self.bam_to_fastq(bam_file)
+        self.upload_reads(output_name, fastq_path, wsname, sequencing_tech, interleaved)
+
+        return {}
+
+    def bam_to_fastq(self, bam_file): # add a dict parameter so those parameter could be use
         bam_filename = bam_file
         with open(bam_filename, 'rb') as file:
             bam_data = file.read().decode('utf-8', 'ignore')
@@ -215,7 +231,8 @@ class BamConversion(Core):
 
         return out_path
     
-    def upload_reads(self, name, reads_path, wsname):
+
+    def upload_reads(self, name, reads_path, workspace_name, sequencing_tech, interleaved):
         """
         Upload reads back to the KBase Workspace. This method only uses the
         minimal parameters necessary to provide a demonstration. There are many
@@ -229,8 +246,10 @@ class BamConversion(Core):
         ur_params = {
             "fwd_file": reads_path,
             "name": name,
-            "sequencing_tech": "Illumina",
-            "wsname": wsname,
+            "sequencing_tech": sequencing_tech,
+            "wsname": workspace_name,
+            "interleaved": interleaved
+            #"single_genome": single_genome
         }
         # It is often useful to log parameters as they are passed.
         logging.warning(f">>>>>>>>>>>>>>>>>>>>{ur_params}")

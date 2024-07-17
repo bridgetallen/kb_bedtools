@@ -44,18 +44,60 @@
             }
         },
         {
-            "id": "fastq_path_name",
+
+            "id": "sequencing_tech",
             "optional": false,
             "advanced": false,
             "allow_multiple": false,
-            "default_values": [
-              ""
-            ],
             "field_type": "dynamic_dropdown",
             "dynamic_dropdown_options": {
-              "data_source": "ftp_staging"
+                "options": [{
+                    "value": "illumina",
+                    "display": "Illumina"
+                }, {
+                    "value": "pacbio clr",
+                    "display": "PacBio CLR"
+                }, {
+                    "value": "pacbio ccs",
+                    "display": "PacBio CCS"
+                }, {
+                    "value": "iontorrent",
+                    "display": "IonTorrent"
+                }, {
+                    "value": "nanopore",
+                    "display": "NanoPore"
+                }, {
+                    "value": "unknown",
+                    "display": "Unknown"
+                }]
             }
+        },
+        {
+            "id": "single_genome",
+            "optional": false,
+            "advanced": false,
+            "field_type": "checkbox",
+            "default_values": [
+                "0"
+            ],
+            "checkbox_options": {
+                "unchecked_value": 0,
+                "checked_value": 1
+            }
+
+        },
+        {
+          "id": "interleaved",
+          "optional": false,
+          "advanced": false,
+          "allow_multiple": false,
+          "default_values": [0],
+          "field_type": "checkbox",
+          "checkbox_options": {
+            "checked_value": 1,
+            "unchecked_value": 0
           }
+        }
     ],
     "behavior": {
         "service-mapping": {
@@ -85,6 +127,9 @@
                 },{
                     "service_method_output_path": [0,"report_ref"],
                     "target_property": "report_ref"
+                }, {
+                    "service_method_output_path": [0, "obj_ref"],
+                    "target_property": "obj_ref"
                 }
             ]
         }

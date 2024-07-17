@@ -43,6 +43,7 @@ class kb_bedtools:
         self.shared_folder = config['scratch']
         logging.basicConfig(format='%(created)s %(levelname)s: %(message)s',
                             level=logging.INFO)
+        self.config = config
         #END_CONSTRUCTOR
         pass
 
@@ -65,9 +66,13 @@ class kb_bedtools:
                 ReadsUtils=ReadsUtils
             ),
         )
-
-        bam = BamConversion(ctx, config=config)
-        fastq_path = bam.bam_to_fastq(params['bam_file'])        #ExampleReadsApp.upload_reads(self, params['name'], params['reads_path'], params['wsname']) 
+        
+        bam = BamConversion(ctx, config=config, app_config=self.config)
+        output = bam.do_analysis(params)
+        #fastq_path = bam.bam_to_fastq(params['bam_file'])        #ExampleReadsApp.upload_reads(self, params['name'], params['reads_path'], params['wsname']) 
+        #era = ExampleReadsApp(ctx, config=config)
+        #era.upload_reads(params["bam_file"], params["read_ref"], params["workspace_name"])
+    
         #out_path = os.path.join(self.shared_folder, 'filename_end1')
         #logging.warning(f">>>>>>>>>>>>>>>>>>>>{fastq_path}")
         # bam.upload_reads(params['output_name'], fastq_path, params['workspace_name']) 

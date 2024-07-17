@@ -44,12 +44,27 @@ parameters :
             The first parameter
         long-hint  : |
             Format of BAM file to upload
-    fastq_path_name :
-        ui-name : Fastq path 
+    sequencing_tech :
+        ui-name : |
+            Sequencing Tech
         short-hint : |
-            The first parameter
-        long-hint  : |
-            Format of BAM file to upload
+            The techology used to get the genome
+        long-hint : |
+            The sequencing technology used to get the genome date
+    single_genome:
+        ui-name : |
+            Single Geome
+        short-hint : |
+            The data provided is for one geome
+        long-hint : |
+            The data provided is for one geome only
+    interleaved:
+        ui-name : |
+            Interleaved
+        short-hint: |
+            Select if reads file is interleaved
+        long-hint: | 
+            Select if reads file is interleaved
 
 description : |
     <p> Take the top ten reads from a Single End reads object.</p>
