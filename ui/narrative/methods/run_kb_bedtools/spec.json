@@ -118,6 +118,18 @@
                 },{
                     "input_parameter": "output_name",
                     "target_property": "output_name"
+                },{
+                    "input_parameter": "bam_file",
+                    "target_property": "bam_file"
+                },{
+                    "input_parameter": "interleaved",
+                    "target_property": "interleaved"
+                },{
+                    "input_parameter": "sequencing_tech",
+                    "target_property": "sequencing_tech"
+                },{
+                    "input_parameter": "single_genome",
+                    "target_property": "single_genome"
                 }
             ],
             "output_mapping": [
