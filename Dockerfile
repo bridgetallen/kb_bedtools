@@ -1,5 +1,5 @@
 FROM kbase/sdkpython:3.8.0
-MAINTAINER KBase Developer
+MAINTAINER Danielle Phillips
 # -----------------------------------------
 # In this section, you can install any system dependencies required
 # to run your App.  For instance, you could place an apt-get update or
