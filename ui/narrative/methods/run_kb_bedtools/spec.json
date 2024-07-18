@@ -49,8 +49,8 @@
             "optional": false,
             "advanced": false,
             "allow_multiple": false,
-            "field_type": "dynamic_dropdown",
-            "dynamic_dropdown_options": {
+            "field_type": "dropdown",
+            "dropdown_options": {
                 "options": [{
                     "value": "illumina",
                     "display": "Illumina"
