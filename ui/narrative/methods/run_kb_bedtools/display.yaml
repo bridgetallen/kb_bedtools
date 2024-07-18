@@ -67,4 +67,4 @@ parameters :
             Select if reads file is interleaved
 
 description : |
-    <p> Take the top ten reads from a Single End reads object.</p>
+    <p> Takes a BAM file and returns a FASTQ file.</p>
