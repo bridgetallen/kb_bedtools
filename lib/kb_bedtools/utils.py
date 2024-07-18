@@ -36,68 +36,68 @@ class ExampleReadsApp(Core):
         # self.shared_folder is defined in the Core App class.
         # TODO Add a self.wsid = a conversion of self.wsname
 
-    def do_analysis(self, params: dict):
-        """
-        This method is where the main computation will occur.
-        """
-        read_refs = params["reads_ref"]
-        # Download the reads from KBase
-        ret = self.download_reads(read_refs)
-        # We use these downloaded reads and biopython to collect the first 10
-        # reads and their phred quality scores to create a new fastq file to
-        # upload to KBase.
-        for file_ref, file_info in ret["files"].items():
-            file_path = file_info["files"]["fwd"]
-            basename = os.path.basename(file_path)
-            with open(file_path) as reads:
-                record_iter = SeqIO.parse(reads, "fastq")
-                limit = 10
-                head = []
-                scores = []
-                counts = Counter()
-                for ix, record in enumerate(record_iter):
-                    if ix >= limit:
-                        break
-                    head.append(record)
-                    counts.update(str(record.seq))
-                    scores.append(record.letter_annotations["phred_quality"])
-                filename = f"{basename}.head.fastq"
-                out_path = os.path.join(self.shared_folder, filename)
-                with open(out_path, "w") as out_reads:
-                    SeqIO.write(head, out_reads, "fastq")
-
-        # This method runs the process first and then returns the stdout and
-        # stderr all at once, so take care if your process produces a large
-        # amount of output.
-        process = subprocess.Popen(
-            ["/kb/module/scripts/random_logger.py"],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-        )
-
-        stdout, stderr = self.get_streams(process)
-        # We are logging everything because the script we are running does not
-        # have a lot of output, but if what you run does then you might not
-        # want to log *everything* to the user.
-        logging.info(stdout)
-        if stderr:
-            logging.warning(stderr)
-        output_value = stdout.split("\n")[0].split(" ")[-2]
-        count_df = pd.DataFrame(sorted(counts.items()), columns=["base", "count"])
-
-        # Upload the first 10 reads back to kbase as an object
-        upa = self.upload_reads(
-            name=params["output_name"], reads_path=out_path, wsname=params["workspace_name"]
-        )
-
-        # Pass new data to generate the report.
-        params["count_df"] = count_df
-        params["output_value"] = output_value
-        params["scores"] = scores
-        params["upa"] = upa  # Not currently used, but the ID of the uploaded reads
-        # This is the method that generates the HTML report
-        return self.generate_report(params)
-
+    #def do_analysis(self, params: dict):
+    #    """
+    #    This method is where the main computation will occur.
+    #    """
+    #    read_refs = params["reads_ref"]
+    #    # Download the reads from KBase
+    #    ret = self.download_reads(read_refs)
+    #    # We use these downloaded reads and biopython to collect the first 10
+    #    # reads and their phred quality scores to create a new fastq file to
+    #    # upload to KBase.
+    #    for file_ref, file_info in ret["files"].items():
+    #        file_path = file_info["files"]["fwd"]
+    #        basename = os.path.basename(file_path)
+    #        with open(file_path) as reads:
+    #            record_iter = SeqIO.parse(reads, "fastq")
+    #            limit = 10
+    #            head = []
+    #            scores = []
+    #            counts = Counter()
+    #            for ix, record in enumerate(record_iter):
+    #                if ix >= limit:
+    #                    break
+    #                head.append(record)
+    #                counts.update(str(record.seq))
+    #                scores.append(record.letter_annotations["phred_quality"])
+    #            filename = f"{basename}.head.fastq"
+    #            out_path = os.path.join(self.shared_folder, filename)
+    #            with open(out_path, "w") as out_reads:
+    #                SeqIO.write(head, out_reads, "fastq")
+#
+    #    # This method runs the process first and then returns the stdout and
+    #    # stderr all at once, so take care if your process produces a large
+    #    # amount of output.
+    #    process = subprocess.Popen(
+    #        ["/kb/module/scripts/random_logger.py"],
+    #        stdout=subprocess.PIPE,
+    #        stderr=subprocess.PIPE,
+    #    )
+#
+    #    stdout, stderr = self.get_streams(process)
+    #    # We are logging everything because the script we are running does not
+    #    # have a lot of output, but if what you run does then you might not
+    #    # want to log *everything* to the user.
+    #    logging.info(stdout)
+    #    if stderr:
+    #        logging.warning(stderr)
+    #    output_value = stdout.split("\n")[0].split(" ")[-2]
+    #    count_df = pd.DataFrame(sorted(counts.items()), columns=["base", "count"])
+#
+    #    # Upload the first 10 reads back to kbase as an object
+    #    upa = self.upload_reads(
+    #        name=params["output_name"], reads_path=out_path, wsname=params["workspace_name"]
+    #    )
+#
+    #    # Pass new data to generate the report.
+    #    params["count_df"] = count_df
+    #    params["output_value"] = output_value
+    #    params["scores"] = scores
+    #    params["upa"] = upa  # Not currently used, but the ID of the uploaded reads
+    #    # This is the method that generates the HTML report
+    #    return self.generate_report(params)
+#
     @staticmethod
     def get_streams(process):
         """
