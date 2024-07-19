@@ -98,3 +98,17 @@ class kb_bedtoolsTest(unittest.TestCase):
                 "interleaved" : 1
             }
         )
+
+    def test_intersect(self):
+        # in the test, use print() to put things in stdout
+        first_file = 'GSE203496_xmoo1_line_pooled_assembly.gff'
+        second_file = 'GSE240325_apo_rbfox_insitu_clustered.sorted.filtered_lite.gff'
+        self.serviceImpl.run_kb_bedtools_intersect(
+            self.ctx,
+            {
+                "workspace_name": self.wsName,
+                "first_file" : first_file,
+                "second_file" : second_file,
+                "output_name": "intersectOutput",
+            }
+        )

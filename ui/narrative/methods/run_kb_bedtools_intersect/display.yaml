@@ -1,0 +1,99 @@
+#
+# define display information
+#
+name: SFA Example App 1
+
+tooltip: |
+    Takes a BAM file and returns a FASTQ file.
+
+screenshots: []
+
+icon: icon.png
+
+#
+# define a set of similar apps that might be useful to the user
+#
+suggestions:
+    apps:
+        related:
+            [app1, app2]
+        next:
+            [app3, app4]
+
+#
+# Configure the display and description of parameters
+#
+parameters :
+    reads_ref :
+        ui-name : |
+            Reads
+        short-hint : |
+            A Single End Reads object
+        long-hint  : |
+            A Single End Reads object whose top ten reads you care about.
+    output_name:
+        ui-name : |
+            Output Name
+        short-hint : |
+            The name of the resulting object
+        long-hint  : |
+            A name for the ten reads returned.
+    bam_file :
+        ui-name : BAM file type
+        short-hint : |
+            The first parameter
+        long-hint  : |
+            Format of BAM file to upload
+    sequencing_tech :
+        ui-name : |
+            Sequencing Tech
+        short-hint : |
+            The techology used to get the genome
+        long-hint : |
+            The sequencing technology used to get the genome date
+    single_genome :
+        ui-name : |
+            Single Geome
+        short-hint : |
+            The data provided is for one geome
+        long-hint : |
+            The data provided is for one geome only
+    interleaved :
+        ui-name : |
+            Interleaved
+        short-hint : |
+            Select if reads file is interleaved
+        long-hint : | 
+            Select if reads file is interleaved
+    first_file :
+        ui-name : |
+            First GFF File Type
+        short-hint : |
+            Insert a file that has a GFF format
+        long-hint : |
+            Insert a file that has a GFF format
+    second_file :
+        ui-name : |
+            Second GFF File Type
+        short-hint : |
+            Insert a file that has a GFF format
+        long-hint : |
+            Insert a file that has a GFF format
+    overlap : 
+        ui-name : |
+            Overlap
+        short-hint : |
+            How much overlapped should the files have?
+        long-hint: |
+            How much overlapped should there be between the files before it makes a report
+    sorted :
+        ui-name : |
+            Sorted
+        short-hint : |
+            Should the files be sorted before intersection
+        long-hint : |
+            Should the files be sorted before intersection
+
+
+description : |
+    <p> Take the top ten reads from a Single End reads object.</p>

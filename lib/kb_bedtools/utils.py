@@ -254,3 +254,62 @@ class BamConversion(Core):
         # It is often useful to log parameters as they are passed.
         logging.warning(f">>>>>>>>>>>>>>>>>>>>{ur_params}")
         return self.ru.upload_reads(ur_params)
+    
+class Intersection(Core):
+    def __init__(self, ctx, config, clients_class=None):
+        """
+        This is required to instantiate the Core App class with its defaults
+        and allows you to pass in more clients as needed.
+        """
+        super().__init__(ctx, config, clients_class)
+        # Here we adjust the instance attributes for our convenience.
+        self.report = self.clients.KBaseReport
+        self.ru = self.clients.ReadsUtils
+        # self.shared_folder is defined in the Core App class.
+        # TODO Add a self.wsid = a conversion of self.wsname
+    
+    def intersection(self, first_file, second_file):
+        file1 = first_file
+        file2 = second_file
+        open('intersect.gff', 'w').close()
+        with open('intersect.gff', 'w') as f:
+            with subprocess.Popen([
+                'bedtools', 'intersect', '-a', file1, '-b', file2], stdout=f) as proc:
+                    proc.wait()
+        out_path = os.path.join(self.shared_folder, 'intersect.gff')
+        copyfile('intersect.gff', out_path)
+        return out_path
+
+    def do_analysis(self, params: dict):
+        """
+        This method is where the main computation will occur.
+        """
+        first_file = params['first_file']
+        second_file = params['second_file']
+        output_name = params['output_name']
+        wsname = params['workspace_name']
+        sequencing_tech = 'Illumina'
+        fastq_path = self.intersection(first_file, second_file)
+        self.upload_reads(output_name, fastq_path, wsname, sequencing_tech)
+
+        return {}
+
+    def upload_reads(self, name, reads_path, workspace_name, sequencing_tech):
+        """
+        Upload reads back to the KBase Workspace. This method only uses the
+        minimal parameters necessary to provide a demonstration. There are many
+        more parameters which reads can provide, for example, interleaved, etc.
+        By default, non-interleaved objects and those uploaded without a
+        reverse file are saved as KBaseFile.SingleEndLibrary. See:
+        https://github.com/kbaseapps/ReadsUtils/blob/master/lib/ReadsUtils/ReadsUtilsImpl.py#L115-L119
+        param: filepath_to_reads - A filepath to a fastq fastq file to upload reads from
+        param: wsname - The name of the workspace to upload to
+        """
+        ur_params = {
+            "fwd_file": reads_path,
+            "name": name,
+            "wsname": workspace_name,
+            "sequencing_tech" : 'Illumina'
+        }
+        # It is often useful to log parameters as they are passed.
+        logging.warning(f">>>>>>>>>>>>>>>>>>>>{ur_params}")

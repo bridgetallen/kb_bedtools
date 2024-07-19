@@ -6,7 +6,7 @@ import subprocess
 
 from installed_clients.KBaseReportClient import KBaseReport
 from installed_clients.ReadsUtilsClient import ReadsUtils
-from .utils import ExampleReadsApp, BamConversion 
+from .utils import ExampleReadsApp, BamConversion, Intersection 
 from base import Core
 
 
@@ -29,8 +29,8 @@ class kb_bedtools:
     # the latter method is running.
     ######################################### noqa
     VERSION = "0.0.1"
-    GIT_URL = ""
-    GIT_COMMIT_HASH = ""
+    GIT_URL = "git@github.com:Peanut16/kb_bedtools.git"
+    GIT_COMMIT_HASH = "91f4028271383252cb2d7622790d076720617f4c"
 
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER
@@ -47,9 +47,10 @@ class kb_bedtools:
         #END_CONSTRUCTOR
         pass
 
+
     def run_kb_bedtools(self, ctx, params):
         """
-        This example function accepts any number of parameters and returns results in a KBaseReport
+        App which takes a BAM file and returns a Fastq file
         :param params: instance of mapping from String to unspecified object
         :returns: instance of type "ReportResults" -> structure: parameter
            "report_name" of String, parameter "report_ref" of String
@@ -93,6 +94,35 @@ class kb_bedtools:
         # return the results
         return [output]
 
+    def run_kb_bedtools_intersect(self, ctx, params):
+        """
+        App which takes GFF files and do the intersection command
+        :param params: instance of mapping from String to unspecified object
+        :returns: instance of type "ReportResults" -> structure: parameter
+           "report_name" of String, parameter "report_ref" of String
+        """
+        # ctx is the context object
+        # return variables are: output
+        #BEGIN run_kb_bedtools_intersect
+        config = dict(
+            callback_url=self.callback_url,
+            shared_folder=self.shared_folder,
+            clients=dict(
+                KBaseReport=KBaseReport,
+                ReadsUtils=ReadsUtils
+            ),
+        )
+        
+        intersect = Intersection(ctx, config=config)
+        output = intersect.do_analysis(params)
+        #END run_kb_bedtools_intersect
+
+        # At some point might do deeper type checking...
+        if not isinstance(output, dict):
+            raise ValueError('Method run_kb_bedtools_intersect return value ' +
+                             'output is not type dict as required.')
+        # return the results
+        return [output]
     def status(self, ctx):
         #BEGIN_STATUS
         returnVal = {'state': "OK",

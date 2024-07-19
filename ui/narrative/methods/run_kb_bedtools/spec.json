@@ -97,6 +97,51 @@
             "checked_value": 1,
             "unchecked_value": 0
           }
+        },
+        {
+            "id": "first_file",
+            "optional": false,
+            "advanced": false,
+            "allow_multiple": false,
+            "field_type": "dynamic_dropdown",
+            "dynamic_dropdown_options": {
+                "data_source": "ftp_staging"
+            }
+        },
+        {
+            "id": "second_file",
+            "optional": false,
+            "advanced": false,
+            "allow_multiple": false,
+            "field_type": "dynamic_dropdown",
+            "dynamic_dropdown_options": {
+                "data_source": "ftp_staging"
+            }
+        },
+        {
+            "id": "overlap",
+            "optional": false,
+            "advanced": true,
+            "allow_multiple": false,
+            "default_values": [ "1" ],
+            "field_type": "text",
+            "text_options": {
+                "validate_as": "int",
+                "min_int": 1,
+                "max_int": 99
+            }   
+        },
+        {
+            "id": "sorted",
+            "optional": false,
+            "advanced": true,
+            "allow_multiple": false,
+            "default_values": [0],
+            "field_type": "checkbox",
+            "checkbox_options": {
+            "checked_value": 1,
+            "unchecked_value": 0
+          }
         }
     ],
     "behavior": {
@@ -148,3 +193,4 @@
     },
     "job_id_output_field": "docker"
 }
+

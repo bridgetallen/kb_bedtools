@@ -342,6 +342,10 @@ class Application(object):
                              name='kb_bedtools.run_kb_bedtools',
                              types=[dict])
         self.method_authentication['kb_bedtools.run_kb_bedtools'] = 'required'  # noqa
+        self.rpc_service.add(impl_kb_bedtools.run_kb_bedtools_intersect,
+                             name='kb_bedtools.run_kb_bedtools_intersect',
+                             types=[dict])
+        self.method_authentication['kb_bedtools.run_kb_bedtools_intersect'] = 'required'  # noqa
         self.rpc_service.add(impl_kb_bedtools.status,
                              name='kb_bedtools.status',
                              types=[dict])

@@ -9,8 +9,13 @@ module kb_bedtools {
     } ReportResults;
 
     /*
-        This example function accepts any number of parameters and returns results in a KBaseReport
+        App which takes a BAM file and returns a Fastq file
     */
     funcdef run_kb_bedtools(mapping<string,UnspecifiedObject> params) returns (ReportResults output) authentication required;
+
+    /*
+        App which takes GFF files and do the intersection command
+    */
+    funcdef run_kb_bedtools_intersect(mapping<string,UnspecifiedObject> params) returns (ReportResults output) authentication required;
 
 };
