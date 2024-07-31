@@ -4,6 +4,7 @@ import logging
 import os
 import subprocess
 
+from installed_clients.DataFileUtilClient import DataFileUtil
 from installed_clients.KBaseReportClient import KBaseReport
 from installed_clients.ReadsUtilsClient import ReadsUtils
 from .utils import ExampleReadsApp, BamConversion, Intersection 
@@ -63,12 +64,14 @@ class kb_bedtools:
             callback_url=self.callback_url,
             shared_folder=self.shared_folder,
             clients=dict(
+                DataFileUtil=DataFileUtil,
                 KBaseReport=KBaseReport,
                 ReadsUtils=ReadsUtils
             ),
         )
         
         bam = BamConversion(ctx, config=config, app_config=self.config)
+        #bam.bam_to_fastq(params['bam_file'], config['shared_folder'])
         output = bam.do_analysis(params)
         #fastq_path = bam.bam_to_fastq(params['bam_file'])        #ExampleReadsApp.upload_reads(self, params['name'], params['reads_path'], params['wsname']) 
         #era = ExampleReadsApp(ctx, config=config)

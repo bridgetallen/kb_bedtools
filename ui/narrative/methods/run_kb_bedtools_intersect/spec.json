@@ -1,7 +1,7 @@
 {
     "ver": "0.0.1",
     "authors": [
-        "dakotablair"
+        "dpvs2004 nm  "
     ],
     "contact": "",
     "categories": ["active"],
@@ -32,59 +32,6 @@
               "valid_ws_types" : [ "KBaseFile.SingleEndLibrary" ],
               "is_output_name":true
              }
-        },
-        {
-            "id": "bam_file",
-            "optional": false,
-            "advanced": false,
-            "allow_multiple": false,
-            "field_type": "dynamic_dropdown",
-            "dynamic_dropdown_options": {
-                "data_source": "ftp_staging"
-            }
-        },
-        {
-
-            "id": "sequencing_tech",
-            "optional": false,
-            "advanced": false,
-            "allow_multiple": false,
-            "field_type": "dynamic_dropdown",
-            "dynamic_dropdown_options": {
-                "options": [{
-                    "value": "illumina",
-                    "display": "Illumina"
-                }, {
-                    "value": "pacbio clr",
-                    "display": "PacBio CLR"
-                }, {
-                    "value": "pacbio ccs",
-                    "display": "PacBio CCS"
-                }, {
-                    "value": "iontorrent",
-                    "display": "IonTorrent"
-                }, {
-                    "value": "nanopore",
-                    "display": "NanoPore"
-                }, {
-                    "value": "unknown",
-                    "display": "Unknown"
-                }]
-            }
-        },
-        {
-            "id": "single_genome",
-            "optional": false,
-            "advanced": false,
-            "field_type": "checkbox",
-            "default_values": [
-                "0"
-            ],
-            "checkbox_options": {
-                "unchecked_value": 0,
-                "checked_value": 1
-            }
-
         },
         {
           "id": "interleaved",

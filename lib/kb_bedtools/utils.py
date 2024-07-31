@@ -188,6 +188,7 @@ class BamConversion(Core):
         """
         super().__init__(ctx, config, clients_class)
         # Here we adjust the instance attributes for our convenience.
+        self.dfu = self.clients.DataFileUtil
         self.report = self.clients.KBaseReport
         self.ru = self.clients.ReadsUtils
         self.app_config = app_config
@@ -198,27 +199,34 @@ class BamConversion(Core):
         """
         This method is where the main computation will occur.
         """
+        # raise Exception(f"params: {params}")
+        logging.warning(f"{'@'*30} params: {params}")
         bam_file = params['bam_file']
+        logging.warning(f"cwd: {os.getcwd()}")
+        bam_file_staging_path = self.dfu.download_staging_file({
+            'staging_file_subdir_path': bam_file
+        }).get('copy_file_path')
+        logging.warning(f"bam_file_staging_path: {bam_file_staging_path}")
         output_name = params['output_name']
         wsname = params['workspace_name']
         sequencing_tech = 'Illumina'
         interleaved = params['interleaved']
-        fastq_path = self.bam_to_fastq(bam_file)
+        fastq_path = self.bam_to_fastq(bam_file_staging_path, shared_folder=self.shared_folder)
         self.upload_reads(output_name, fastq_path, wsname, sequencing_tech, interleaved)
 
         return {}
 
-    def bam_to_fastq(self, bam_file): # add a dict parameter so those parameter could be use
-        bam_filename = bam_file
-        with open(bam_filename, 'rb') as file:
+    @classmethod
+    def bam_to_fastq(cls, bam_file, shared_folder=""): # add a dict parameter so those parameter could be use
+        with open(bam_file, 'rb') as file:
             bam_data = file.read().decode('utf-8', 'ignore')
         # best to use logging here so that messages are more visible
         logging.warning(f'{">"*20}{os.getcwd()}')
         with subprocess.Popen([
-            'bedtools', 'bamtofastq', '-i', bam_filename, '-fq', 'filename_end1.fq'
+            'bedtools', 'bamtofastq', '-i', bam_file, '-fq', 'filename_end1.fq'
         ]) as proc:
             proc.wait()
-        out_path = os.path.join(self.shared_folder, 'output.fq')
+        out_path = os.path.join(shared_folder, 'output.fq')
         copyfile('filename_end1.fq', out_path)
         # Upload the fastq file we just made to a reads object in KBase
         # upa = self.upload_reads(

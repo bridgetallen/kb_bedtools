@@ -1,13 +1,17 @@
 # -*- coding: utf-8 -*-
+import pathlib
 import os
+import subprocess
 import time
 import unittest
+
 from configparser import ConfigParser
-import subprocess
+from shutil import copyfile
 
 from kb_bedtools.kb_bedtoolsImpl import kb_bedtools
 from kb_bedtools.kb_bedtoolsServer import MethodContext
 from kb_bedtools.authclient import KBaseAuth as _KBaseAuth
+from kb_bedtools.utils import BamConversion
 
 from installed_clients.WorkspaceClient import Workspace
 
@@ -89,15 +93,18 @@ class kb_bedtoolsTest(unittest.TestCase):
     def test_bam_to_fastq(self):
         # in the test, use print() to put things in stdout
         bam_filename = 'wgEncodeUwRepliSeqBg02esG1bAlnRep1.bam'
-        self.serviceImpl.run_kb_bedtools(
-            self.ctx,
-            {
-                "workspace_name": self.wsName,
-                "bam_file" : bam_filename,
-                "output_name": "FASTQOutput",
-                "interleaved" : 1
-            }
+        # staging_path = '/data/bulk/dpvs2004/'
+        #pathlib.Path(staging_path).mkdir(parents=True, exist_ok=True)
+        output = BamConversion.bam_to_fastq(bam_filename)
+        copyfile(output, os.path.join(self.scratch, 'out.fq'))
+        out = subprocess.run(
+            f'ls -halF {self.scratch}'.split(' '),
+            capture_output=True
         )
+        stdout = out.stdout.decode('utf-8', 'ignore')
+        print(stdout)
+        #bam = BamConversion(ctx={}, config={"clients": {DataFileUtil=DataFileUtil, KBaseReport=KBaseReport,
+        #       ReadsUtils=ReadsUtils}}, app_config={}),
 
     def test_intersect(self):
         # in the test, use print() to put things in stdout

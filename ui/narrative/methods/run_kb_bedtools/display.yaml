@@ -1,10 +1,10 @@
 #
 # define display information
 #
-name: SFA Example App 1
+name: Bedtools Bam to Fastq
 
 tooltip: |
-    Take the top ten reads from a Single End reads object.
+    Takes a BAM file and returns a FASTQ file.
 
 screenshots: []
 
@@ -24,13 +24,6 @@ suggestions:
 # Configure the display and description of parameters
 #
 parameters :
-    reads_ref :
-        ui-name : |
-            Reads
-        short-hint : |
-            A Single End Reads object
-        long-hint  : |
-            A Single End Reads object whose top ten reads you care about.
     output_name:
         ui-name : |
             Output Name
@@ -65,35 +58,6 @@ parameters :
             Select if reads file is interleaved
         long-hint : | 
             Select if reads file is interleaved
-    first_file :
-        ui-name : |
-            First GFF File Type
-        short-hint : |
-            Insert a file that has a GFF format
-        long-hint : |
-            Insert a file that has a GFF format
-    second_file :
-        ui-name : |
-            Second GFF File Type
-        short-hint : |
-            Insert a file that has a GFF format
-        long-hint : |
-            Insert a file that has a GFF format
-    overlap : 
-        ui-name : |
-            Overlap
-        short-hint : |
-            How much overlapped should the files have?
-        long-hint: |
-            How much overlapped should there be between the files before it makes a report
-    sorted :
-        ui-name : |
-            Sorted
-        short-hint : |
-            Should the files be sorted before intersection
-        long-hint : |
-            Should the files be sorted before intersection
-
 
 description : |
     <p> Takes a BAM file and returns a FASTQ file.</p>
