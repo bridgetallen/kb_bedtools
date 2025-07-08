@@ -1,22 +1,23 @@
 # -*- coding: utf-8 -*-
 import logging
-import pathlib
-import unittest
-from unittest.mock import patch
-from installed_clients.DataFileUtilClient import DataFileUtil
 import os
+import pathlib
+import shutil
 import subprocess
 import time
+import unittest
 import unittest
 
 from configparser import ConfigParser
 from shutil import copyfile
+from unittest.mock import patch
 
 from kb_bedtools.kb_bedtoolsImpl import kb_bedtools
 from kb_bedtools.kb_bedtoolsServer import MethodContext
 from kb_bedtools.authclient import KBaseAuth as _KBaseAuth
 from kb_bedtools.utils import BamConversion
 
+from installed_clients.DataFileUtilClient import DataFileUtil
 from installed_clients.WorkspaceClient import Workspace
 
 def mock_download_staging_file(params):
@@ -76,9 +77,6 @@ class kb_bedtoolsTest(unittest.TestCase):
             print("Test workspace was deleted")
 
     def copy_bam_to_scratch(self):
-        import shutil
-        import os
-
         bam_src = os.path.join(os.path.dirname(__file__), "wgEncodeUwRepliSeqBg02esG1bAlnRep1.bam")
         bam_dst = os.path.join(self.scratch, "wgEncodeUwRepliSeqBg02esG1bAlnRep1.bam")
 
@@ -109,7 +107,7 @@ class kb_bedtoolsTest(unittest.TestCase):
                 "reads_ref": "70257/2/1",
                 "output_name": "ReadsOutputName",
                 "bam_file": "wgEncodeUwRepliSeqBg02esG1bAlnRep1.bam",
-                "fastq_path_name": "../../module/test/filename_end2.fq",
+                "fastq_path_name": os.path.join(self.staging, "filename_end2.fq"),
             }
 
             ret = self.serviceImpl.run_kb_bedtools(self.ctx, params)
