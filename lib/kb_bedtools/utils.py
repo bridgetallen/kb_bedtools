@@ -206,7 +206,9 @@ class BamConversion(Core):
         bam_file_staging_path = self.dfu.download_staging_file({
             'staging_file_subdir_path': bam_file
         }).get('copy_file_path')
+        logging.warning(f'{"&"*20}{bam_file_staging_path=}')
         logging.warning(f"bam_file_staging_path: {bam_file_staging_path}")
+        raise Exception
         output_name = params['output_name']
         wsname = params['workspace_name']
         sequencing_tech = 'Illumina'

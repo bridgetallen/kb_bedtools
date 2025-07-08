@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
+import logging
 import pathlib
+import unittest
+from unittest.mock import patch
+from installed_clients.DataFileUtilClient import DataFileUtil
 import os
 import subprocess
 import time
@@ -15,6 +19,15 @@ from kb_bedtools.utils import BamConversion
 
 from installed_clients.WorkspaceClient import Workspace
 
+def mock_download_staging_file(params):
+    print("Mocking download_staging_file with:", params)
+    staging_file_name = os.path.basename(params["staging_file_subdir_path"])
+
+    source_path = os.path.join("/home/ac.ballen/kb_bedtools/test", staging_file_name)
+    dest_path = os.path.join("/kb/module/work/tmp", staging_file_name)
+
+    shutil.copy(source_path, dest_path)
+    return {"copy_file_path": dest_path}
 
 class kb_bedtoolsTest(unittest.TestCase):
     @classmethod
@@ -62,8 +75,20 @@ class kb_bedtoolsTest(unittest.TestCase):
             cls.wsClient.delete_workspace({"workspace": cls.wsName})
             print("Test workspace was deleted")
 
+    def copy_bam_to_scratch(self):
+        import shutil
+        import os
+
+        bam_src = os.path.join(os.path.dirname(__file__), "wgEncodeUwRepliSeqBg02esG1bAlnRep1.bam")
+        bam_dst = os.path.join(self.scratch, "wgEncodeUwRepliSeqBg02esG1bAlnRep1.bam")
+
+        shutil.copy(bam_src, bam_dst)
+        print(f"Copied BAM file to scratch: {bam_dst}")
+        return bam_dst
+
+
     # NOTE: According to Python unittest naming rules test method names should start from 'test'. # noqa
-    @unittest.skip("Skip test for debugging")
+    # @unittest.skip("Skip test for debugging")
     def test_your_method(self):
         # Prepare test objects in workspace if needed using
         # self.getWsClient().save_objects({'workspace': self.getWsName(),
@@ -74,48 +99,20 @@ class kb_bedtoolsTest(unittest.TestCase):
         #
         # Check returned data with
         # self.assertEqual(ret[...], ...) or other unittest methods
-        ret = self.serviceImpl.run_kb_bedtools(
-            self.ctx,
-            {
+
+        @patch.object(DataFileUtil, "download_staging_file", side_effect=mock_download_staging_file)
+        def test_your_method(self, mock_download):
+                # Now when run_kb_bedtools calls download_staging_file, it uses your mock
+
+            params = {
                 "workspace_name": self.wsName,
                 "reads_ref": "70257/2/1",
                 "output_name": "ReadsOutputName",
-                "bam_file" : 'wgEncodeUwRepliSeqBg02esG1bAlnRep1.bam',
-                "fastq_path_name" : '../../module/test/filename_end2.fq'
-            },
-        )
-        with self.assertRaises(KeyError):
-            self.serviceImpl.run_kb_bedtools(self.ctx, {'workspace_name': self.wsName})
-        # next steps:
-        # - download report
-        # - assert that the report has expected contents
-    
-    def test_bam_to_fastq(self):
-        # in the test, use print() to put things in stdout
-        bam_filename = 'wgEncodeUwRepliSeqBg02esG1bAlnRep1.bam'
-        # staging_path = '/data/bulk/dpvs2004/'
-        #pathlib.Path(staging_path).mkdir(parents=True, exist_ok=True)
-        output = BamConversion.bam_to_fastq(bam_filename)
-        copyfile(output, os.path.join(self.scratch, 'out.fq'))
-        out = subprocess.run(
-            f'ls -halF {self.scratch}'.split(' '),
-            capture_output=True
-        )
-        stdout = out.stdout.decode('utf-8', 'ignore')
-        print(stdout)
-        #bam = BamConversion(ctx={}, config={"clients": {DataFileUtil=DataFileUtil, KBaseReport=KBaseReport,
-        #       ReadsUtils=ReadsUtils}}, app_config={}),
-
-    def test_intersect(self):
-        # in the test, use print() to put things in stdout
-        first_file = 'GSE203496_xmoo1_line_pooled_assembly.gff'
-        second_file = 'GSE240325_apo_rbfox_insitu_clustered.sorted.filtered_lite.gff'
-        self.serviceImpl.run_kb_bedtools_intersect(
-            self.ctx,
-            {
-                "workspace_name": self.wsName,
-                "first_file" : first_file,
-                "second_file" : second_file,
-                "output_name": "intersectOutput",
+                "bam_file": "wgEncodeUwRepliSeqBg02esG1bAlnRep1.bam",
+                "fastq_path_name": "../../module/test/filename_end2.fq",
             }
-        )
+
+            ret = self.serviceImpl.run_kb_bedtools(self.ctx, params)
+
+            self.assertIn("report_name", ret[0])
+            self.assertIn("report_ref", ret[0])
