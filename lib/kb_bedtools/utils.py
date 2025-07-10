@@ -204,24 +204,24 @@ class BamConversion(Core):
         bam_file = params['bam_file']
         staging_path = os.path.join("/staging/", bam_file)
         # Read and print first 1000 characters
-        with open(staging_path, 'r') as f:
+        with open(staging_path, 'rb') as f:
             content = f.read(1000)
             print("First 1000 characters from the file:")
-            print(content)
+            print(content.decode('ascii', 'ignore'))
 
         
         logging.warning(f"{'@'*30} params: {params}")
         logging.warning(f"cwd: {os.getcwd()}")
-        bam_file_staging_path = self.dfu.download_staging_file({
-            'staging_file_subdir_path': bam_file
-        }).get('copy_file_path')
-        logging.warning(f'{"&"*20}{bam_file_staging_path=}')
-        logging.warning(f"bam_file_staging_path: {bam_file_staging_path}")
+        #bam_file_staging_path = self.dfu.download_staging_file({
+            # 'staging_file_subdir_path': bam_file
+        #}).get('copy_file_path')
+        #logging.warning(f'{"&"*20}{bam_file_staging_path=}')
+        #logging.warning(f"bam_file_staging_path: {bam_file_staging_path}")
         output_name = params['output_name']
         wsname = params['workspace_name']
         sequencing_tech = 'Illumina'
         interleaved = params['interleaved']
-        fastq_path = self.bam_to_fastq(bam_file_staging_path, shared_folder=self.shared_folder)
+        fastq_path = self.bam_to_fastq(staging_path, shared_folder=self.shared_folder)
         self.upload_reads(output_name, fastq_path, wsname, sequencing_tech, interleaved)
 
         return {}
