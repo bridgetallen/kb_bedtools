@@ -202,8 +202,9 @@ class BamConversion(Core):
         """
         print(f"{json.dumps(params)=}")
         bam_file = params['bam_file']
+        staging_path = os.path.join("/staging/", bam_file)
         # Read and print first 1000 characters
-        with open(bam_file, 'r') as f:
+        with open(staging_path, 'r') as f:
             content = f.read(1000)
             print("First 1000 characters from the file:")
             print(content)
