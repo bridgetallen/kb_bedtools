@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 #BEGIN_HEADER
+import json
 import logging
 import os
 import subprocess
@@ -69,7 +70,6 @@ class kb_bedtools:
                 ReadsUtils=ReadsUtils
             ),
         )
-        
         bam = BamConversion(ctx, config=config, app_config=self.config)
         #bam.bam_to_fastq(params['bam_file'], config['shared_folder'])
         output = bam.do_analysis(params)

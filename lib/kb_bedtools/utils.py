@@ -199,16 +199,22 @@ class BamConversion(Core):
         """
         This method is where the main computation will occur.
         """
-        # raise Exception(f"params: {params}")
-        logging.warning(f"{'@'*30} params: {params}")
+        print(f"{json.dumps(params)=}")
         bam_file = params['bam_file']
+        # Read and print first 1000 characters
+        with open(bam_file, 'r') as f:
+            content = f.read(1000)
+            print("First 1000 characters from the file:")
+            print(content)
+
+        
+        logging.warning(f"{'@'*30} params: {params}")
         logging.warning(f"cwd: {os.getcwd()}")
         bam_file_staging_path = self.dfu.download_staging_file({
             'staging_file_subdir_path': bam_file
         }).get('copy_file_path')
         logging.warning(f'{"&"*20}{bam_file_staging_path=}')
         logging.warning(f"bam_file_staging_path: {bam_file_staging_path}")
-        raise Exception
         output_name = params['output_name']
         wsname = params['workspace_name']
         sequencing_tech = 'Illumina'
