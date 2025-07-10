@@ -2,6 +2,7 @@
 This ExampleReadsApp demonstrates how to use best practices for KBase App
 development using the SFA base package.
 """
+import json
 import io
 import logging
 import os
