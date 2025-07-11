@@ -7,6 +7,7 @@ import io
 import logging
 import os
 import subprocess
+import pysam
 import uuid
 
 from collections import Counter
@@ -210,6 +211,15 @@ class BamConversion(Core):
             decoded = "".join([c if ord(c)>=32 else "?" for c in content.decode("ascii", "ignore")])
             print(f"{decoded=}")
 
+    def preview_bam_reads(bam_file_path):
+        import pysam
+        bam = pysam.AlignmentFile(bam_file_path, "rb")
+        for read in bam.fetch():
+            print(read)
+            break  # Just show one read
+        bam.close()
+
+
         
         logging.warning(f"{'@'*30} params: {params}")
         logging.warning(f"cwd: {os.getcwd()}")
@@ -310,7 +320,7 @@ class Intersection(Core):
         sequencing_tech = 'Illumina'
         fastq_path = self.intersection(first_file, second_file)
         self.upload_reads(output_name, fastq_path, wsname, sequencing_tech)
-
+        preview_bam_reads(bam_file_path)
         return {}
 
     def upload_reads(self, name, reads_path, workspace_name, sequencing_tech):

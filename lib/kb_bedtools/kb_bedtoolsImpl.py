@@ -8,7 +8,8 @@ import subprocess
 from installed_clients.DataFileUtilClient import DataFileUtil
 from installed_clients.KBaseReportClient import KBaseReport
 from installed_clients.ReadsUtilsClient import ReadsUtils
-from .utils import ExampleReadsApp, BamConversion, Intersection 
+from .utils import ExampleReadsApp, BamConversion, Intersection
+from kb_bedtools.utils import preview_bam_reads
 from base import Core
 
 
