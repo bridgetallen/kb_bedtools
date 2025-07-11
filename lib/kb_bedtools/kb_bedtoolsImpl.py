@@ -51,6 +51,10 @@ class kb_bedtools:
 
 
     def run_kb_bedtools(self, ctx, params):
+        import subprocess
+        version = subprocess.check_output(["bedtools", "--version"])
+        print("BEDTOOLS VERSION IN CONTAINER:", version.decode())
+
         """
         App which takes a BAM file and returns a Fastq file
         :param params: instance of mapping from String to unspecified object
