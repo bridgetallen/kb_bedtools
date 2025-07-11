@@ -205,8 +205,8 @@ class BamConversion(Core):
         staging_path = os.path.join("/staging/", bam_file)
         # Read and print first 1000 characters
         with open(staging_path, 'rb') as f:
-            content = f.read(1000)
-            print("First 1000 characters from the file:")
+            content = f.read(1001)
+            print("First 1001 characters from the file:")
             print(content.decode('ascii', 'ignore'))
 
         
