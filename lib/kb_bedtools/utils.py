@@ -207,7 +207,8 @@ class BamConversion(Core):
         with open(staging_path, 'rb') as f:
             content = f.read(1001)
             print("First 1001 characters from the file:")
-            print(content.decode('ascii', 'ignore'))
+            decoded = "".join([c if ord(c)>=32 else "?" for c in content.decode("ascii", "ignore")])
+            print(f"{decoded=}")
 
         
         logging.warning(f"{'@'*30} params: {params}")
