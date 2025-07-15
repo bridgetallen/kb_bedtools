@@ -104,6 +104,7 @@ class kb_bedtoolsTest(unittest.TestCase):
             "workspace_name": self.wsName,
             "reads_ref": "70257/2/1",
             "output_name": "ReadsOutputName",
+            "interleaved": False,
             "bam_file": "wgEncodeUwRepliSeqBg02esG1bAlnRep1.bam",
             "fastq_path_name": os.path.join("/staging", "filename_end2.fq"),
         }

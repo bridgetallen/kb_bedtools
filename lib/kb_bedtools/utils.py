@@ -221,12 +221,6 @@ class BamConversion(Core):
         fastq_path = self.bam_to_fastq(staging_path, shared_folder=self.shared_folder)
         self.upload_reads(output_name, fastq_path, wsname, sequencing_tech, interleaved)
 
-        with open(fastq_path, 'rb') as f:
-            content = f.read(1001)
-            print("First 1001 characters from the file:")
-            decoded = "".join([c if ord(c)>=32 else "?" for c in content.decode("ascii", "ignore")])
-            print(f"{decoded=}")
-
         return {}
 
     @classmethod
@@ -239,6 +233,12 @@ class BamConversion(Core):
             'bedtools', 'bamtofastq', '-i', bam_file, '-fq', 'filename_end1.fq'
         ]) as proc:
             proc.wait()
+        with open("filename_end1.fq", 'rb') as f:
+            content = f.read(1001)
+            print("First 1001 characters from the file:")
+            decoded = "".join([c if ord(c)>=32 else "?" for c in content.decode("ascii", "ignore")])
+            print(f"{decoded=}")
+
         out_path = os.path.join(shared_folder, 'output.fq')
         copyfile('filename_end1.fq', out_path)
         # Upload the fastq file we just made to a reads object in KBase
