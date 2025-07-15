@@ -204,11 +204,7 @@ class BamConversion(Core):
         bam_file = params['bam_file']
         staging_path = os.path.join("/staging/", bam_file)
         # Read and print first 1000 characters
-        with open(staging_path, 'rb') as f:
-            content = f.read(1001)
-            print("First 1001 characters from the file:")
-            decoded = "".join([c if ord(c)>=32 else "?" for c in content.decode("ascii", "ignore")])
-            print(f"{decoded=}")
+
 
         
         logging.warning(f"{'@'*30} params: {params}")
@@ -224,6 +220,12 @@ class BamConversion(Core):
         interleaved = params['interleaved']
         fastq_path = self.bam_to_fastq(staging_path, shared_folder=self.shared_folder)
         self.upload_reads(output_name, fastq_path, wsname, sequencing_tech, interleaved)
+
+        with open(fastq_path, 'rb') as f:
+            content = f.read(1001)
+            print("First 1001 characters from the file:")
+            decoded = "".join([c if ord(c)>=32 else "?" for c in content.decode("ascii", "ignore")])
+            print(f"{decoded=}")
 
         return {}
 
