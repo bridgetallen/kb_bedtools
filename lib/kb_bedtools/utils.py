@@ -233,6 +233,12 @@ class BamConversion(Core):
             'bedtools', 'bamtofastq', '-i', bam_file, '-fq', 'filename_end1.fq'
         ]) as proc:
             proc.wait()
+        if not os.path.exists("filename_end1.fq"):
+            raise FileNotFoundError("bedtools did not create FASTQ file")
+
+        if os.path.getsize("filename_end1.fq") < 100:
+            raise ValueError("Generated FASTQ file is unexpectedly small — check input BAM or bedtools error")
+
         with open("filename_end1.fq", 'rb') as f:
             content = f.read(1001)
             print("First 1001 characters from the file:")
