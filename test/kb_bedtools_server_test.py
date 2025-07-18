@@ -111,5 +111,7 @@ class kb_bedtoolsTest(unittest.TestCase):
 
         ret = self.serviceImpl.run_kb_bedtools(self.ctx, params)
 
-        #self.assertIn("report_name", ret[0])
-        #self.assertIn("report_ref", ret[0])
+        print("REPORT:", ret)
+
+        self.assertIn("report_name", ret[0])
+        self.assertIn("report_ref", ret[0])

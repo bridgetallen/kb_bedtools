@@ -221,7 +221,24 @@ class BamConversion(Core):
         fastq_path = self.bam_to_fastq(staging_path, shared_folder=self.shared_folder)
         reads_result = self.upload_reads(output_name, fastq_path, wsname, sequencing_tech, interleaved)
 
-        return {}
+
+        report_info = self.report.create({
+            'report': {
+                'text_message': f'Successfully converted BAM to FASTQ and uploaded as Reads: {output_name}',
+                'objects_created': [
+                    {
+                        'ref': reads_result['obj_ref'],
+                        'description': 'Uploaded Reads object from FASTQ'
+                    }
+                ]
+            },
+            'workspace_name': wsname
+        })
+
+        return {
+            "report_name": report_info['name'],
+            "report_ref": report_info['ref']
+        }
 
     @classmethod
     def bam_to_fastq(cls, bam_file, shared_folder=""): # add a dict parameter so those parameter could be use
