@@ -91,16 +91,16 @@ class kb_bedtools:
         #era = ExampleReadsApp(ctx, config=config)
         #output = era.do_analysis(params)
 
-        output = {}
-        #END run_kb_bedtools
+        output = bam.do_analysis(params)
 
         # At some point might do deeper type checking...
         if not isinstance(output, dict):
             raise ValueError('Method run_kb_bedtools return value ' +
                              'output is not type dict as required.')
         # return the results
+        print("RETURNING:", output)  # Must print this
         return [output]
-
+        #END run_kb_bedtools
     def run_kb_bedtools_intersect(self, ctx, params):
         """
         App which takes GFF files and do the intersection command

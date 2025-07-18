@@ -202,7 +202,7 @@ class BamConversion(Core):
         """
         print(f"{json.dumps(params)=}")
         bam_file = params['bam_file']
-        staging_path = os.path.join("/staging/", bam_file)
+        staging_path = bam_file if os.path.isfile(bam_file) else os.path.join("/staging/", bam_file)
         # Read and print first 1000 characters
 
 
@@ -219,7 +219,7 @@ class BamConversion(Core):
         sequencing_tech = 'Illumina'
         interleaved = params['interleaved']
         fastq_path = self.bam_to_fastq(staging_path, shared_folder=self.shared_folder)
-        self.upload_reads(output_name, fastq_path, wsname, sequencing_tech, interleaved)
+        reads_result = self.upload_reads(output_name, fastq_path, wsname, sequencing_tech, interleaved)
 
         return {}
 
@@ -234,7 +234,7 @@ class BamConversion(Core):
         ]) as proc:
             proc.wait()
         if not os.path.exists("filename_end1.fq"):
-            raise FileNotFoundError("bedtools did not create FASTQ file")
+           raise FileNotFoundError("bedtools did not create FASTQ file")
 
         if os.path.getsize("filename_end1.fq") < 100:
             raise ValueError("Generated FASTQ file is unexpectedly small — check input BAM or bedtools error")
@@ -245,8 +245,8 @@ class BamConversion(Core):
             decoded = "".join([c if ord(c)>=32 else "?" for c in content.decode("ascii", "ignore")])
             print(f"{decoded=}")
 
-        out_path = os.path.join(shared_folder, 'output.fq')
-        copyfile('filename_end1.fq', out_path)
+        output_path = os.path.join(shared_folder, 'output.fq')
+        copyfile('filename_end1.fq', output_path)
         # Upload the fastq file we just made to a reads object in KBase
         # upa = self.upload_reads(
         #     name=params["output_name"], reads_path=out_path, wsname=params["workspace_name"]
@@ -256,7 +256,7 @@ class BamConversion(Core):
         #fastq_file = open(fastq_path, 'r')
         #print(fastq_file.read())
 
-        return out_path
+        return output_path
     
 
     def upload_reads(self, name, reads_path, workspace_name, sequencing_tech, interleaved):
