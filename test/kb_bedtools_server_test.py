@@ -6,11 +6,9 @@ import shutil
 import subprocess
 import time
 import unittest
-import unittest
 
 from configparser import ConfigParser
 from shutil import copyfile
-from unittest.mock import patch
 
 from kb_bedtools.kb_bedtoolsImpl import kb_bedtools
 from kb_bedtools.kb_bedtoolsServer import MethodContext
@@ -77,41 +75,36 @@ class kb_bedtoolsTest(unittest.TestCase):
             print("Test workspace was deleted")
 
     def copy_bam_to_scratch(self):
-        bam_src = os.path.join(os.path.dirname(__file__), "aligned.bam")
-        bam_dst = os.path.join(self.scratch, "aligned.bam")
+        bam_src = os.path.join(os.path.dirname(__file__), "minimal.bam")
+        bam_dst = os.path.join(self.scratch, "minimal.bam")
 
         shutil.copy(bam_src, bam_dst)
         print(f"Copied BAM file to scratch: {bam_dst}")
         return bam_dst
 
-
-    # NOTE: According to Python unittest naming rules test method names should start from 'test'. # noqa
-    # @unittest.skip("Skip test for debugging")
-    # Now when run_kb_bedtools calls download_staging_file, it uses your mock
-    @patch.object(DataFileUtil, "download_staging_file", side_effect=mock_download_staging_file)
-    def test_your_method(self, mock_download):
-        # Prepare test objects in workspace if needed using
-        # self.getWsClient().save_objects({'workspace': self.getWsName(),
-        #                                  'objects': []})
-        #
-        # Run your method by
-        # ret = self.getImpl().your_method(self.getContext(), parameters...)
-        #
-        # Check returned data with
-        # self.assertEqual(ret[...], ...) or other unittest methods
+    def test_intersect(self):
+        # in the test, use print() to put things in stdout
+        first_file = 'GSE203496_xmoo1_line_pooled_assembly.gff'
+        second_file = 'GSE240325_apo_rbfox_insitu_clustered.sorted.filtered_lite.gff'
+        self.serviceImpl.run_kb_bedtools_intersect(
+            self.ctx,
+            {
+                "workspace_name": self.wsName,
+                "first_file" : first_file,
+                "second_file" : second_file,
+                "output_name": "intersectOutput",
+            })
 
         params = {
             "workspace_name": self.wsName,
             "reads_ref": "70257/2/1",
             "output_name": "ReadsOutputName",
             "interleaved": True,
-            "bam_file": "aligned.bam",
+            "bam_file": "minimal.bam",
             "fastq_path_name": os.path.join("/kb/module/work/tmp", "filename_end2.fq"),
         }
 
         ret = self.serviceImpl.run_kb_bedtools(self.ctx, params)
-
-        print("REPORT:", ret)
 
         self.assertIn("report_name", ret[0])
         self.assertIn("report_ref", ret[0])

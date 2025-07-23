@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 #BEGIN_HEADER
-import json
 import logging
 import os
 import subprocess
@@ -8,9 +7,10 @@ import subprocess
 from installed_clients.DataFileUtilClient import DataFileUtil
 from installed_clients.KBaseReportClient import KBaseReport
 from installed_clients.ReadsUtilsClient import ReadsUtils
-from .utils import ExampleReadsApp, BamConversion, Intersection
 from base import Core
 
+from kb_bedtools.utils import Intersection
+from kb_bedtools.utils import BamConversion
 
 #END_HEADER
 
@@ -51,7 +51,6 @@ class kb_bedtools:
 
 
     def run_kb_bedtools(self, ctx, params):
-        import subprocess
         version = subprocess.check_output(["bedtools", "--version"])
         print("BEDTOOLS VERSION IN CONTAINER:", version.decode())
 
@@ -75,21 +74,7 @@ class kb_bedtools:
             ),
         )
         bam = BamConversion(ctx, config=config, app_config=self.config)
-        #bam.bam_to_fastq(params['bam_file'], config['shared_folder'])
         output = bam.do_analysis(params)
-        #fastq_path = bam.bam_to_fastq(params['bam_file'])        #ExampleReadsApp.upload_reads(self, params['name'], params['reads_path'], params['wsname']) 
-        #era = ExampleReadsApp(ctx, config=config)
-        #era.upload_reads(params["bam_file"], params["read_ref"], params["workspace_name"])
-    
-        #out_path = os.path.join(self.shared_folder, 'filename_end1')
-        #logging.warning(f">>>>>>>>>>>>>>>>>>>>{fastq_path}")
-        # bam.upload_reads(params['output_name'], fastq_path, params['workspace_name']) 
-
-        #ExampleReadsApp.upload_reads(self, params['name'], params['reads_path'], params['wsname']) #might not need this
-        # Download Reads
-
-        #era = ExampleReadsApp(ctx, config=config)
-        #output = era.do_analysis(params)
 
         output = bam.do_analysis(params)
 
@@ -98,7 +83,6 @@ class kb_bedtools:
             raise ValueError('Method run_kb_bedtools return value ' +
                              'output is not type dict as required.')
         # return the results
-        print("RETURNING:", output)  # Must print this
         return [output]
         #END run_kb_bedtools
     def run_kb_bedtools_intersect(self, ctx, params):

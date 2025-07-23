@@ -3,7 +3,6 @@ import subprocess
 
 import pytest
 
-from kb_bedtools.utils import ExampleReadsApp
 
 @pytest.fixture
 def process():
