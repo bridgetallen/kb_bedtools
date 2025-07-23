@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 #BEGIN_HEADER
+import json
 import logging
 import os
 import subprocess
@@ -7,7 +8,7 @@ import subprocess
 from installed_clients.DataFileUtilClient import DataFileUtil
 from installed_clients.KBaseReportClient import KBaseReport
 from installed_clients.ReadsUtilsClient import ReadsUtils
-from .utils import ExampleReadsApp, BamConversion, Intersection 
+from .utils import ExampleReadsApp, BamConversion, Intersection
 from base import Core
 
 
@@ -50,6 +51,10 @@ class kb_bedtools:
 
 
     def run_kb_bedtools(self, ctx, params):
+        import subprocess
+        version = subprocess.check_output(["bedtools", "--version"])
+        print("BEDTOOLS VERSION IN CONTAINER:", version.decode())
+
         """
         App which takes a BAM file and returns a Fastq file
         :param params: instance of mapping from String to unspecified object
@@ -69,7 +74,6 @@ class kb_bedtools:
                 ReadsUtils=ReadsUtils
             ),
         )
-        
         bam = BamConversion(ctx, config=config, app_config=self.config)
         #bam.bam_to_fastq(params['bam_file'], config['shared_folder'])
         output = bam.do_analysis(params)
@@ -87,16 +91,16 @@ class kb_bedtools:
         #era = ExampleReadsApp(ctx, config=config)
         #output = era.do_analysis(params)
 
-        output = {}
-        #END run_kb_bedtools
+        output = bam.do_analysis(params)
 
         # At some point might do deeper type checking...
         if not isinstance(output, dict):
             raise ValueError('Method run_kb_bedtools return value ' +
                              'output is not type dict as required.')
         # return the results
+        print("RETURNING:", output)  # Must print this
         return [output]
-
+        #END run_kb_bedtools
     def run_kb_bedtools_intersect(self, ctx, params):
         """
         App which takes GFF files and do the intersection command
