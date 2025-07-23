@@ -77,8 +77,8 @@ class kb_bedtoolsTest(unittest.TestCase):
             print("Test workspace was deleted")
 
     def copy_bam_to_scratch(self):
-        bam_src = os.path.join(os.path.dirname(__file__), "wgEncodeUwRepliSeqBg02esG1bAlnRep1.bam")
-        bam_dst = os.path.join(self.scratch, "wgEncodeUwRepliSeqBg02esG1bAlnRep1.bam")
+        bam_src = os.path.join(os.path.dirname(__file__), "aligned.bam")
+        bam_dst = os.path.join(self.scratch, "aligned.bam")
 
         shutil.copy(bam_src, bam_dst)
         print(f"Copied BAM file to scratch: {bam_dst}")
@@ -87,7 +87,9 @@ class kb_bedtoolsTest(unittest.TestCase):
 
     # NOTE: According to Python unittest naming rules test method names should start from 'test'. # noqa
     # @unittest.skip("Skip test for debugging")
-    def test_your_method(self):
+    # Now when run_kb_bedtools calls download_staging_file, it uses your mock
+    @patch.object(DataFileUtil, "download_staging_file", side_effect=mock_download_staging_file)
+    def test_your_method(self, mock_download):
         # Prepare test objects in workspace if needed using
         # self.getWsClient().save_objects({'workspace': self.getWsName(),
         #                                  'objects': []})
@@ -98,19 +100,18 @@ class kb_bedtoolsTest(unittest.TestCase):
         # Check returned data with
         # self.assertEqual(ret[...], ...) or other unittest methods
 
-        @patch.object(DataFileUtil, "download_staging_file", side_effect=mock_download_staging_file)
-        def test_your_method(self, mock_download):
-                # Now when run_kb_bedtools calls download_staging_file, it uses your mock
+        params = {
+            "workspace_name": self.wsName,
+            "reads_ref": "70257/2/1",
+            "output_name": "ReadsOutputName",
+            "interleaved": True,
+            "bam_file": "aligned.bam",
+            "fastq_path_name": os.path.join("/kb/module/work/tmp", "filename_end2.fq"),
+        }
 
-            params = {
-                "workspace_name": self.wsName,
-                "reads_ref": "70257/2/1",
-                "output_name": "ReadsOutputName",
-                "bam_file": "wgEncodeUwRepliSeqBg02esG1bAlnRep1.bam",
-                "fastq_path_name": os.path.join(self.staging, "filename_end2.fq"),
-            }
+        ret = self.serviceImpl.run_kb_bedtools(self.ctx, params)
 
-            ret = self.serviceImpl.run_kb_bedtools(self.ctx, params)
+        print("REPORT:", ret)
 
-            self.assertIn("report_name", ret[0])
-            self.assertIn("report_ref", ret[0])
+        self.assertIn("report_name", ret[0])
+        self.assertIn("report_ref", ret[0])

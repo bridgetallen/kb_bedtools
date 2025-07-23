@@ -2,6 +2,7 @@
 This ExampleReadsApp demonstrates how to use best practices for KBase App
 development using the SFA base package.
 """
+import json
 import io
 import logging
 import os
@@ -199,24 +200,45 @@ class BamConversion(Core):
         """
         This method is where the main computation will occur.
         """
-        # raise Exception(f"params: {params}")
-        logging.warning(f"{'@'*30} params: {params}")
+        print(f"{json.dumps(params)=}")
         bam_file = params['bam_file']
+        staging_path = bam_file if os.path.isfile(bam_file) else os.path.join("/staging/", bam_file)
+        # Read and print first 1000 characters
+
+
+        
+        logging.warning(f"{'@'*30} params: {params}")
         logging.warning(f"cwd: {os.getcwd()}")
-        bam_file_staging_path = self.dfu.download_staging_file({
-            'staging_file_subdir_path': bam_file
-        }).get('copy_file_path')
-        logging.warning(f'{"&"*20}{bam_file_staging_path=}')
-        logging.warning(f"bam_file_staging_path: {bam_file_staging_path}")
-        raise Exception
+        #bam_file_staging_path = self.dfu.download_staging_file({
+            # 'staging_file_subdir_path': bam_file
+        #}).get('copy_file_path')
+        #logging.warning(f'{"&"*20}{bam_file_staging_path=}')
+        #logging.warning(f"bam_file_staging_path: {bam_file_staging_path}")
         output_name = params['output_name']
         wsname = params['workspace_name']
         sequencing_tech = 'Illumina'
         interleaved = params['interleaved']
-        fastq_path = self.bam_to_fastq(bam_file_staging_path, shared_folder=self.shared_folder)
-        self.upload_reads(output_name, fastq_path, wsname, sequencing_tech, interleaved)
+        fastq_path = self.bam_to_fastq(staging_path, shared_folder=self.shared_folder)
+        reads_result = self.upload_reads(output_name, fastq_path, wsname, sequencing_tech, interleaved)
 
-        return {}
+
+        report_info = self.report.create({
+            'report': {
+                'text_message': f'Successfully converted BAM to FASTQ and uploaded as Reads: {output_name}',
+                'objects_created': [
+                    {
+                        'ref': reads_result['obj_ref'],
+                        'description': 'Uploaded Reads object from FASTQ'
+                    }
+                ]
+            },
+            'workspace_name': wsname
+        })
+
+        return {
+            "report_name": report_info['name'],
+            "report_ref": report_info['ref']
+        }
 
     @classmethod
     def bam_to_fastq(cls, bam_file, shared_folder=""): # add a dict parameter so those parameter could be use
@@ -228,8 +250,20 @@ class BamConversion(Core):
             'bedtools', 'bamtofastq', '-i', bam_file, '-fq', 'filename_end1.fq'
         ]) as proc:
             proc.wait()
-        out_path = os.path.join(shared_folder, 'output.fq')
-        copyfile('filename_end1.fq', out_path)
+        if not os.path.exists("filename_end1.fq"):
+           raise FileNotFoundError("bedtools did not create FASTQ file")
+
+        if os.path.getsize("filename_end1.fq") < 100:
+            raise ValueError("Generated FASTQ file is unexpectedly small — check input BAM or bedtools error")
+
+        with open("filename_end1.fq", 'rb') as f:
+            content = f.read(1001)
+            print("First 1001 characters from the file:")
+            decoded = "".join([c if ord(c)>=32 else "?" for c in content.decode("ascii", "ignore")])
+            print(f"{decoded=}")
+
+        output_path = os.path.join(shared_folder, 'output.fq')
+        copyfile('filename_end1.fq', output_path)
         # Upload the fastq file we just made to a reads object in KBase
         # upa = self.upload_reads(
         #     name=params["output_name"], reads_path=out_path, wsname=params["workspace_name"]
@@ -239,7 +273,7 @@ class BamConversion(Core):
         #fastq_file = open(fastq_path, 'r')
         #print(fastq_file.read())
 
-        return out_path
+        return output_path
     
 
     def upload_reads(self, name, reads_path, workspace_name, sequencing_tech, interleaved):
@@ -301,7 +335,6 @@ class Intersection(Core):
         sequencing_tech = 'Illumina'
         fastq_path = self.intersection(first_file, second_file)
         self.upload_reads(output_name, fastq_path, wsname, sequencing_tech)
-
         return {}
 
     def upload_reads(self, name, reads_path, workspace_name, sequencing_tech):
