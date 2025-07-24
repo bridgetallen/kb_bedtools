@@ -89,7 +89,8 @@ class BamConversion(Core):
         return output_path
     
 
-    def upload_reads(self, name, reads_path, workspace_name, sequencing_tech, interleaved):
+    def upload_reads(self, name, reads_path, workspace_name,
+                     sequencing_tech=None, interleaved=None):
         """
         Upload reads back to the KBase Workspace. This method only uses the
         minimal parameters necessary to provide a demonstration. There are many
