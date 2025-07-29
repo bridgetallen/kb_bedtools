@@ -95,6 +95,7 @@ class kb_bedtoolsTest(unittest.TestCase):
                 "output_name": "intersectOutput",
             })
 
+    def test_bamtofastq(self):
         params = {
             "workspace_name": self.wsName,
             "reads_ref": "70257/2/1",

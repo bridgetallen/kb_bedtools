@@ -47,7 +47,12 @@ class BamConversion(Core):
         wsname = params['workspace_name']
         sequencing_tech = 'Illumina'
         interleaved = params['interleaved']
-        fastq_path = self.bam_to_fastq(staging_path, shared_folder=self.shared_folder)
+        if params.get('paired_end'):
+            fastq_path = self.bam_to_paired_fastq(staging_path, shared_folder=self.shared_folder)
+        else:
+            fastq_path = self.bam_to_fastq(staging_path, shared_folder=self.shared_folder)
+
+
         reads_result = self.upload_reads(output_name, fastq_path, wsname, sequencing_tech, interleaved)
 
 

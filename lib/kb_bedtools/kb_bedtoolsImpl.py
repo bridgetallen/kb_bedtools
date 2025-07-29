@@ -9,8 +9,7 @@ from installed_clients.KBaseReportClient import KBaseReport
 from installed_clients.ReadsUtilsClient import ReadsUtils
 from base import Core
 
-from kb_bedtools.utils import Intersection
-from kb_bedtools.utils import BamConversion
+from kb_bedtools.utils import BamConversion, Intersection
 
 #END_HEADER
 
