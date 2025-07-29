@@ -59,5 +59,6 @@ parameters :
         long-hint : | 
             Select if reads file is interleaved
 
+
 description : |
     <p> Takes a BAM file and returns a FASTQ file.</p>

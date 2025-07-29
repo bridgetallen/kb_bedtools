@@ -3,6 +3,8 @@ import io
 import logging
 import os
 import subprocess
+import uuid
+import shutil
 
 from collections import Counter
 from shutil import copyfile
@@ -45,7 +47,12 @@ class BamConversion(Core):
         wsname = params['workspace_name']
         sequencing_tech = 'Illumina'
         interleaved = params['interleaved']
-        fastq_path = self.bam_to_fastq(staging_path, shared_folder=self.shared_folder)
+        if params.get('paired_end'):
+            fastq_path = self.bam_to_paired_fastq(staging_path, shared_folder=self.shared_folder)
+        else:
+            fastq_path = self.bam_to_fastq(staging_path, shared_folder=self.shared_folder)
+
+
         reads_result = self.upload_reads(output_name, fastq_path, wsname, sequencing_tech, interleaved)
 
 
@@ -69,27 +76,63 @@ class BamConversion(Core):
 
     @classmethod
     def bam_to_fastq(cls, bam_file, shared_folder=""): # add a dict parameter so those parameter could be use
-        with open(bam_file, 'rb') as file:
-            bam_data = file.read().decode('utf-8', 'ignore')
-        # best to use logging here so that messages are more visible
+        if not os.path.isfile(bam_file):
+            raise FileNotFoundError(f"{bam_file} not found")
+
+        unique_id = str(uuid.uuid4())[:8]
+        temp_fastq = f"filename_end1_{unique_id}.fq"
+        output_path = os.path.join(shared_folder, f"output_{unique_id}.fq")
+
         logging.warning(f'{">"*20}{os.getcwd()}')
+
         with subprocess.Popen([
-            'bedtools', 'bamtofastq', '-i', bam_file, '-fq', 'filename_end1.fq'
+            'bedtools', 'bamtofastq', '-i', bam_file, '-fq', temp_fastq
         ]) as proc:
             proc.wait()
-        if not os.path.exists("filename_end1.fq"):
-           raise FileNotFoundError("bedtools did not create FASTQ file")
 
-        if os.path.getsize("filename_end1.fq") < 100:
+        if not os.path.exists(temp_fastq):
+            raise FileNotFoundError("bedtools did not create FASTQ file")
+
+        if os.path.getsize(temp_fastq) < 100:
             raise ValueError("Generated FASTQ file is unexpectedly small — check input BAM or bedtools error")
 
-        output_path = os.path.join(shared_folder, 'output.fq')
-        copyfile('filename_end1.fq', output_path)
-        
+        shutil.copyfile(temp_fastq, output_path)
         return output_path
-    
 
-    def upload_reads(self, name, reads_path, workspace_name, sequencing_tech, interleaved):
+    @classmethod
+    def bam_to_fastq_paired(cls, bam_file, shared_folder=""):
+        if not os.path.isfile(bam_file):
+            raise FileNotFoundError(f"{bam_file} not found")
+
+        unique_id = str(uuid.uuid4())[:8]
+        read1_file = f"filename_end1_{unique_id}.fq"
+        read2_file = f"filename_end2_{unique_id}.fq"
+
+
+        logging.warning(f"{'>'*20}{os.getcwd()}")
+
+        with subprocess.Popen([
+            'bedtools', 'bamtofastq',
+            '-i', bam_file,
+            '-fq', read1_file,
+            '-fq2', read2_file
+        ]) as proc:
+            proc.wait()
+
+        if not os.path.exists(read1_file) or not os.path.exists(read2_file):
+            raise FileNotFoundError("Paired-end FASTQ files were not created")
+
+        
+        output1 = os.path.join(shared_folder, f"read1_{unique_id}.fq")
+        output2 = os.path.join(shared_folder, f"read2_{unique_id}.fq")
+        
+        shutil.copyfile(read1_file, output1)
+        shutil.copyfile(read2_file, output2)
+
+        return {"read1": output1, "read2": output2}
+
+    def upload_reads(self, name, reads_path, workspace_name,
+                     sequencing_tech=None, interleaved=None):
         """
         Upload reads back to the KBase Workspace. This method only uses the
         minimal parameters necessary to provide a demonstration. There are many
