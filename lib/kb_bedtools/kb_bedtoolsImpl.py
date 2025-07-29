@@ -50,6 +50,10 @@ class kb_bedtools:
 
 
     def run_kb_bedtools(self, ctx, params):
+        intersect = IntersectApp(ctx, config, app_config)  # Example: if you separate it
+        output = intersect.do_analysis(params)
+        return [output]
+
         version = subprocess.check_output(["bedtools", "--version"])
         print("BEDTOOLS VERSION IN CONTAINER:", version.decode())
 
