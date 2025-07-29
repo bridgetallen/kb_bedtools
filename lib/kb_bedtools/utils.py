@@ -177,6 +177,7 @@ class Intersection(Core):
         return out_path
 
     def do_analysis(self, params: dict):
+        print(f"[DEBUG] Params received: {params}")
         """
         This method is where the main computation will occur.
         """
