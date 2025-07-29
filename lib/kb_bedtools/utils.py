@@ -180,7 +180,9 @@ class Intersection(Core):
         """
         This method is where the main computation will occur.
         """
-        first_file = params['first_file']
+        first_file = params.get('first_file')
+        if not first_file:
+            raise ValueError("Missing required parameter: first_file")
         second_file = params['second_file']
         output_name = params['output_name']
         wsname = params['workspace_name']
