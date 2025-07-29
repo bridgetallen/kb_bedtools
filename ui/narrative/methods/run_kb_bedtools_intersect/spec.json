@@ -10,6 +10,16 @@
         "output": null
     },
     "parameters": [
+
+		{
+        	"id": "first_file",
+        	"ui_name": "First File",
+        	"field_type": "data",
+        	"optional": false,
+        	"text_options": {
+            	"valid_ws_types": ["KBaseFile.Bed"]
+        	}
+    	},	
         {
             "id": "reads_ref",
             "optional": false,
