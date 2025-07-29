@@ -95,7 +95,7 @@
         "service-mapping": {
             "url": "",
             "name": "kb_bedtools",
-            "method": "run_kb_bedtools",
+            "method": "run_kb_bedtools_intersect",
             "input_mapping": [
                 {
                     "narrative_system_variable": "workspace",
