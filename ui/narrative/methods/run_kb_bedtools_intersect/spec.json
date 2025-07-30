@@ -113,8 +113,7 @@
                     "target_property": "output_name"
                 },{
                     "input_parameter": "first_file",
-                    "target_property": "first_file",
-                    "target_type_transform": "resolved-ref"
+                    "target_property": "first_file"
                 }
 
             ],
