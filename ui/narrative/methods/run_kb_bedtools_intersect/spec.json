@@ -114,6 +114,9 @@
                 },{
                     "input_parameter": "first_file",
                     "target_property": "first_file"
+                },{
+                    "input_parameter": "second_file",
+                    "target_property": "second_file"
                 }
 
             ],
