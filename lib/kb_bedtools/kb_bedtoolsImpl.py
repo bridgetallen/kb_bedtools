@@ -30,8 +30,8 @@ class kb_bedtools:
     # the latter method is running.
     ######################################### noqa
     VERSION = "0.0.1"
-    GIT_URL = "git@github.com:Peanut16/kb_bedtools.git"
-    GIT_COMMIT_HASH = "91f4028271383252cb2d7622790d076720617f4c"
+    GIT_URL = "git@github.com:kbaseapps/kb_bedtools.git"
+    GIT_COMMIT_HASH = "676cb49110c793763fccfd065e4274cedecc0b00"
 
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER
@@ -50,13 +50,6 @@ class kb_bedtools:
 
 
     def run_kb_bedtools(self, ctx, params):
-        intersect = Intersection(ctx, config, app_config)  # Example: if you separate it
-        output = intersect.do_analysis(params)
-        return [output]
-
-        version = subprocess.check_output(["bedtools", "--version"])
-        print("BEDTOOLS VERSION IN CONTAINER:", version.decode())
-
         """
         App which takes a BAM file and returns a Fastq file
         :param params: instance of mapping from String to unspecified object
@@ -67,6 +60,8 @@ class kb_bedtools:
         # return variables are: output
         #BEGIN run_kb_bedtools
 
+        version = subprocess.check_output(["bedtools", "--version"])
+        print("BEDTOOLS VERSION IN CONTAINER:", version.decode())
         config = dict(
             callback_url=self.callback_url,
             shared_folder=self.shared_folder,
@@ -79,7 +74,7 @@ class kb_bedtools:
         bam = BamConversion(ctx, config=config, app_config=self.config)
         output = bam.do_analysis(params)
 
-        output = bam.do_analysis(params)
+        #END run_kb_bedtools
 
         # At some point might do deeper type checking...
         if not isinstance(output, dict):
@@ -87,7 +82,7 @@ class kb_bedtools:
                              'output is not type dict as required.')
         # return the results
         return [output]
-        #END run_kb_bedtools
+
     def run_kb_bedtools_intersect(self, ctx, params):
         """
         App which takes GFF files and do the intersection command
@@ -98,6 +93,7 @@ class kb_bedtools:
         # ctx is the context object
         # return variables are: output
         #BEGIN run_kb_bedtools_intersect
+        logging.warning(f"[DEBUG] Params received: {params}")
         config = dict(
             callback_url=self.callback_url,
             shared_folder=self.shared_folder,
